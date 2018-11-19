@@ -2,5 +2,8 @@
     <string name="app_name">미아 방지 어플리케이션</string>
     <string name="id">I D</string>
     <string name="pw">password</string>
+    <string name="login">로그인</string>
+    <string name="findid">아이디찾기</string>
+    <string name="firstset">회원가입</string>
 
 </resources>
