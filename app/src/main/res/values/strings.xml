@@ -5,5 +5,8 @@
     <string name="login">로그인</string>
     <string name="findid">아이디찾기</string>
     <string name="firstset">회원가입</string>
+    <string name="IDset">ID</string>
+    <string name="PWset">비밀번호</string>
+    <string name="NameSet">이름</string>
 
 </resources>
