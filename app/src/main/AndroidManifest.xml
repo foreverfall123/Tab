@@ -19,7 +19,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".MembershipActivity"/>
-        <activity android:name=".DBConnection"/>
+        <activity android:name=".ParentIndexActivity"/>
+        <activity android:name=".ChildIndexActivity"/>
     </application>
 
 </manifest>

@@ -35,6 +35,7 @@
                 android:gravity="center"
                 android:text="@string/id"/>
             <EditText
+                android:id="@+id/loginid"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"/>
@@ -47,6 +48,7 @@
                 android:gravity="center"
                 android:text="@string/pw"/>
             <EditText
+                android:id="@+id/loginpw"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"/>

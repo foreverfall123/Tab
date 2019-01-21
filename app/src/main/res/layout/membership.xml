@@ -4,6 +4,7 @@
     android:layout_height="match_parent">
 
     <LinearLayout
+        android:id="@+id/signuplayout"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,6 +17,7 @@
             android:layout_height="wrap_content"
             android:text="@string/IDset"/>
         <EditText
+            android:id="@+id/signid"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/round_rectangle"/>
@@ -24,6 +26,7 @@
             android:layout_height="wrap_content"
             android:text="@string/PWset"/>
         <EditText
+            android:id="@+id/signpw"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/round_rectangle"/>
@@ -32,11 +35,42 @@
             android:layout_height="wrap_content"
             android:text="@string/NameSet"/>
         <EditText
+            android:id="@+id/signname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/round_rectangle"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="상태"/>
+        <RadioGroup
+            android:id="@+id/rg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <RadioButton
+                android:id="@+id/rbp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="20pt"
+                android:text="부모"/>
+            <RadioButton
+                android:id="@+id/rbc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="자녀"/>
+        </RadioGroup>
 
     </LinearLayout>
+
+    <Button
+        android:id="@+id/signupbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@id/signuplayout"
+        android:layout_below="@id/signuplayout"
+        android:text="가입신청"/>
 
 
 </RelativeLayout>
