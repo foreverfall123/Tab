@@ -3,6 +3,7 @@
     package="com.namseoul.sa.tab">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <application
         android:allowBackup="true"
@@ -11,6 +12,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyD__F8RBiuP_5IrzmeGBqbubymiNla1ias"/>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,6 +26,8 @@
         <activity android:name=".MembershipActivity"/>
         <activity android:name=".ParentIndexActivity"/>
         <activity android:name=".ChildIndexActivity"/>
+        <activity android:name=".GeofancingActivity"/>
+        <activity android:name=".GoogleMapActivity"/>
     </application>
 
 </manifest>

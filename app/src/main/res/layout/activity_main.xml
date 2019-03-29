@@ -70,7 +70,7 @@
             android:text="@string/firstset"/>
 
         <Button
-            android:id="@+id/find_id_btn"
+            android:id="@+id/test_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/findid"/>
