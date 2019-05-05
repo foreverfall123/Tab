@@ -109,9 +109,6 @@ public class ParentIndexActivity extends AppCompatActivity {
                     sb.setLength(0);
                     sb.append("mode").append("=").append("check");
                     break;
-                case "save":
-
-                    break;
             }
             try{
                 URL url = new URL(urlbase + "login.php");
