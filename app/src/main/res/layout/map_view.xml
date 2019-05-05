@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/geolayout"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true">
+
+        <EditText
+            android:id="@+id/geotext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="주소 검색"
+            android:layout_weight="1"
+            />
+
+        <Button
+            android:id="@+id/geobtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:text="검색"/>
+
+    </LinearLayout>
+
+
+    <fragment
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/geolayout"
+        android:layout_above="@id/seeklayout"
+        class="com.google.android.gms.maps.MapFragment"/>
+
+    <LinearLayout
+        android:id="@+id/seeklayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true">
+
+        <SeekBar
+            android:id="@+id/rangeBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:max="1000"
+            android:progress="50"
+            android:layout_gravity="center"/>
+
+        <EditText
+            android:id="@+id/seekEt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:hint="범위지정"/>
+
+        <Button
+            android:id="@+id/addend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:text="추가"/>
+
+    </LinearLayout>
+
+
+
+
+
+</RelativeLayout>

@@ -5,10 +5,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <fragment
-        android:id="@+id/map"
+    <Button
+        android:id="@+id/safesetbtn"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:name="com.google.android.gms.maps.SupportMapFragment"/>
+        android:layout_height="wrap_content"
+        android:text="안전지대 설정"/>
+
+    <Button
+        android:id="@+id/helpersetbtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="지도 기능 실행"/>
+
+    <Button
+        android:id="@+id/anothersetbtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="기타 설정"/>
 
 </LinearLayout>

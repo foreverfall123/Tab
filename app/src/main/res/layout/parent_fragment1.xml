@@ -3,13 +3,22 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/f1tv"
+    <Button
+        android:id="@+id/safezonebtn"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:textSize="20dp"
-        android:textColor="#000000"
-        android:text="fragment1"/>
+        android:layout_height="wrap_content"
+        android:text="안전지대 실행"/>
+
+    <Button
+        android:id="@+id/mapstartbtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="지도 기능 실행"/>
+
+    <Button
+        android:id="@+id/helpbtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="외부 도움 요청"/>
 
 </LinearLayout>

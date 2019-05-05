@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/etName"
+            android:layout_width="80dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="이름"
+            android:singleLine="true"/>
+
+        <EditText
+            android:id="@+id/etLatitude"
+            android:layout_width="80dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="위도"
+            android:singleLine="true"/>
+
+        <EditText
+            android:id="@+id/etLongitude"
+            android:layout_width="80dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="경도"
+            android:singleLine="true"/>
+
+        <EditText
+            android:id="@+id/etRange"
+            android:layout_width="80dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="범위"
+            android:singleLine="true"/>
+
+        <Button
+            android:id="@+id/btnAdd"
+            android:layout_width="80dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:onClick="btnAdd"
+            android:text="추가"/>
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/top"></ListView>
+
+    <LinearLayout
+        android:id="@+id/btnlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true">
+
+        <Button
+            android:id="@+id/clearbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="초기화"
+            android:onClick="clearbtn"
+            android:singleLine="true"/>
+
+        <Button
+            android:id="@+id/addbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="지도로 추가"
+            android:onClick="mapadd"
+            android:singleLine="true"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

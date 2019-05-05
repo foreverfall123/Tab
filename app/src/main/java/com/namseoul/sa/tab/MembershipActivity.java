@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -47,6 +48,7 @@ public class MembershipActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.membership);
 
         eid = findViewById(R.id.signid);

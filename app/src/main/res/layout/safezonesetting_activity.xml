@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_marginTop="30dip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textSize="40dip"
+        android:text="안전지대 설정 목록"/>
+
+    <TableLayout
+        android:layout_margin="30dip"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TableRow
+            android:layout_weight="1"
+            android:layout_marginBottom="20dip" >
+
+            <ToggleButton
+                android:id="@+id/toarray1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginRight="10dip"
+                android:visibility="invisible"/>
+
+            <TextView
+                android:id="@+id/tvarray1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginRight="10dip"
+                android:visibility="invisible"
+                android:gravity="center"/>
+
+            <ToggleButton
+                android:id="@+id/toarray2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginRight="10dip"
+                android:visibility="invisible"/>
+
+            <TextView
+                android:id="@+id/tvarray2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:visibility="invisible"
+                android:gravity="center"/>
+
+        </TableRow>
+
+        <TableRow
+            android:layout_weight="1"
+            android:layout_marginBottom="20dip">
+
+            <ToggleButton
+                android:id="@+id/toarray3"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginRight="10dip"
+                android:visibility="invisible"/>
+
+            <TextView
+                android:id="@+id/tvarray3"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginRight="10dip"
+                android:visibility="invisible"
+                android:gravity="center"/>
+
+            <ToggleButton
+                android:id="@+id/toarray4"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginRight="10dip"
+                android:visibility="invisible"/>
+
+            <TextView
+                android:id="@+id/tvarray4"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:visibility="invisible"
+                android:gravity="center"/>
+
+        </TableRow>
+
+        <TableRow
+            android:layout_weight="1"
+            android:layout_marginBottom="20dip">
+
+            <ToggleButton
+                android:id="@+id/toarray5"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginRight="10dip"
+                android:visibility="invisible"/>
+
+            <TextView
+                android:id="@+id/tvarray5"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginRight="10dip"
+                android:visibility="invisible"
+                android:gravity="center"/>
+
+            <ToggleButton
+                android:id="@+id/toarray6"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginRight="10dip"
+                android:visibility="invisible"/>
+
+            <TextView
+                android:id="@+id/tvarray6"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:visibility="invisible"
+                android:gravity="center"/>
+
+        </TableRow>
+
+        <TableRow
+            android:layout_weight="1"
+            android:layout_marginBottom="20dip">
+
+            <ToggleButton
+                android:id="@+id/toarray7"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginRight="10dip"
+                android:visibility="invisible"/>
+
+            <TextView
+                android:id="@+id/tvarray7"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginRight="10dip"
+                android:visibility="invisible"
+                android:gravity="center"/>
+
+            <ToggleButton
+                android:id="@+id/toarray8"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginRight="10dip"
+                android:visibility="invisible"/>
+
+            <TextView
+                android:id="@+id/tvarray8"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:visibility="invisible"
+                android:gravity="center"/>
+
+        </TableRow>
+
+        <TableRow
+            android:layout_weight="1"
+            android:layout_marginBottom="20dip">
+
+            <ToggleButton
+                android:id="@+id/toarray9"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginRight="10dip"
+                android:visibility="invisible"/>
+
+            <TextView
+                android:id="@+id/tvarray9"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginRight="10dip"
+                android:visibility="invisible"
+                android:gravity="center"/>
+
+            <ToggleButton
+                android:id="@+id/toarray10"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginRight="10dip"
+                android:visibility="invisible"/>
+
+            <TextView
+                android:id="@+id/tvarray10"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:visibility="invisible"
+                android:gravity="center"/>
+
+        </TableRow>
+
+    </TableLayout>
+
+</LinearLayout>

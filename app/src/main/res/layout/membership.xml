@@ -1,54 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="#9AFE2E">
 
     <LinearLayout
         android:id="@+id/signuplayout"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/round_rectangle"
-        android:padding="20pt"
-        android:layout_margin="20pt">
+        android:layout_marginLeft="40dip"
+        android:layout_marginRight="40dip"
+        android:layout_marginBottom="20dip"
+        android:background="@drawable/round_rectangle">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/IDset"/>
+            android:text="회 원 가 입"
+            android:gravity="center"
+            android:background="@drawable/round_rectangle"
+            android:backgroundTint="#4fa5d5"
+            android:layout_marginBottom="30dip"
+            android:textSize="40sp"
+            android:fontFamily="@fontnanumbarunpenb"
+            android:textColor="#FFFFFF"
+            android:paddingTop="10dip"
+            android:paddingBottom="10dip"/>
+
         <EditText
             android:id="@+id/signid"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/round_rectangle"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/PWset"/>
+            android:layout_height="50dip"
+            android:textSize="15sp"
+            android:layout_marginRight="20dip"
+            android:layout_marginLeft="20dip"
+            android:layout_marginBottom="20dip"
+            android:hint="account"
+            android:maxLines="1"/>
+
         <EditText
             android:id="@+id/signpw"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/round_rectangle"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/NameSet"/>
+            android:layout_height="50dip"
+            android:textSize="15sp"
+            android:layout_marginRight="20dip"
+            android:layout_marginLeft="20dip"
+            android:layout_marginBottom="20dip"
+            android:hint="password"
+            android:maxLines="1"/>
+
         <EditText
             android:id="@+id/signname"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/round_rectangle"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="상태"/>
+            android:layout_height="50dip"
+            android:textSize="15sp"
+            android:layout_marginRight="20dip"
+            android:layout_marginLeft="20dip"
+            android:layout_marginBottom="20dip"
+            android:hint="name"
+            android:maxLines="1"/>
+
         <RadioGroup
             android:id="@+id/rg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center">
+            android:gravity="center"
+            android:layout_marginBottom="20dip">
             <RadioButton
                 android:id="@+id/rbp"
                 android:layout_width="wrap_content"
@@ -59,18 +80,23 @@
                 android:id="@+id/rbc"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="자녀"/>
+                android:text="자녀"
+                />
         </RadioGroup>
 
     </LinearLayout>
 
     <Button
         android:id="@+id/signupbtn"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignRight="@id/signuplayout"
-        android:layout_below="@id/signuplayout"
-        android:text="가입신청"/>
+        android:text="가입신청"
+        android:layout_marginLeft="40dip"
+        android:layout_marginRight="40dip"
+        android:background="@drawable/round"
+        android:backgroundTint="#4fa5d5"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp"/>
 
 
-</RelativeLayout>
+</LinearLayout>

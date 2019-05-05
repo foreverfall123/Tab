@@ -2,11 +2,12 @@
     <string name="app_name">미아 방지 어플리케이션</string>
     <string name="id">I D</string>
     <string name="pw">password</string>
-    <string name="login">로그인</string>
-    <string name="findid">테스트화면</string>
-    <string name="firstset">회원가입</string>
+    <string name="login">Sign in</string>
+    <string name="findid">Forgot Password?</string>
+    <string name="firstset">Create New Account</string>
     <string name="IDset">ID</string>
     <string name="PWset">비밀번호</string>
     <string name="NameSet">이름</string>
+    <color name="mainbg">#00BFFF</color>
 
 </resources>
