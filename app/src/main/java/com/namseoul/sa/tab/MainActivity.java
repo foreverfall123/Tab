@@ -35,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     EditText id,pw;
     TextView membership,find;
 
+    String idstr;
+
 
     static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1000;
 
@@ -112,9 +114,11 @@ public class MainActivity extends AppCompatActivity {
             StringBuilder sb = new StringBuilder();
             HttpURLConnection urlConn = null;
 
+            idstr = id.getText().toString();
+
             sb.append("mode").append("=").append("login").append("&");
             sb.append("userID").append("=").append(id.getText().toString()).append("&");
-            sb.append("userPassword").append("=").append(pw.getText().toString());
+            sb.append("userPassword").append("=").append(pw.getText().toString()).append("&");
 
             try{
                 URL url = new URL(urlbase + "login.php");
@@ -170,11 +174,13 @@ public class MainActivity extends AppCompatActivity {
         switch (s){
             case "P":
                 i = new Intent(MainActivity.this, ParentIndexActivity.class);
+                i.putExtra("idstr",idstr);
                 startActivity(i);
                 finish();
                 break;
             case "C":
                 i = new Intent(MainActivity.this,ChildIndexActivity.class);
+                i.putExtra("idstr",idstr);
                 startActivity(i);
                 finish();
                 break;
