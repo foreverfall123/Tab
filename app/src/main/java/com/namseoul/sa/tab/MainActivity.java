@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     EditText id,pw;
     TextView membership,find;
 
+
     static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1000;
 
     final static String urlbase = "http://13.125.191.250/";
