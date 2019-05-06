@@ -3,7 +3,9 @@ package com.namseoul.sa.tab;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
@@ -12,16 +14,31 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.widget.EditText;
 
+import android.app.Service;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
+import junit.framework.Test;
+
 import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.URL;
+import java.security.Provider;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ParentIndexActivity extends AppCompatActivity {
 
@@ -59,6 +76,7 @@ public class ParentIndexActivity extends AppCompatActivity {
         ActionBar.Tab tab1 = bar.newTab().setText("기능").setTabListener(tabListener);
         ActionBar.Tab tab2 = bar.newTab().setText("설정").setTabListener(tabListener);
 
+
         bar.addTab(tab1);
         bar.addTab(tab2);
 
@@ -70,6 +88,8 @@ public class ParentIndexActivity extends AppCompatActivity {
 
         CustomFragmentPagerAdapter adapter = new CustomFragmentPagerAdapter(fm, fList);
         mViewPager.setAdapter(adapter);
+        Intent intent = new Intent(getApplicationContext(),Myservice.class);
+        startService(intent);
     }
 
     ViewPager.SimpleOnPageChangeListener viewPagerListener = new ViewPager.SimpleOnPageChangeListener(){
@@ -212,6 +232,71 @@ public class ParentIndexActivity extends AppCompatActivity {
             }
         }
     }
+    public class Myservice extends Service{
+        static final int PORT = 10001;
+        ServerSocket serversocket;
+        Socket socket;
+        DataInputStream is;
+        DataOutputStream os;
+        String msg="";
+        String strContact;
 
+        private Gson gson;
+        private SharedPreferences sp;
+        private List<TestData> datas;
+        private TestData testData;
 
+        boolean isConnected = true;
+        @Override
+        public IBinder onBind(Intent intent){return null;}
+        @Override
+        public void onCreate() {
+            super.onCreate();
+            sp=getSharedPreferences("Test",MODE_PRIVATE);
+            strContact = sp.getString("Test","");
+            gson = new Gson();
+            if(TextUtils.isEmpty(strContact)){
+                datas = new ArrayList<TestData>();
+            }
+            else {
+                datas = gson.fromJson(strContact, new TypeToken<List<TestData>>() {}.getType());
+            }
+            ServiceRun();
+        }
+        public void ServiceRun(){
+            new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+                    try {
+                        serversocket = new ServerSocket(PORT);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        socket = serversocket.accept();
+                        is = new DataInputStream(socket.getInputStream());
+                        os = new DataOutputStream(socket.getOutputStream());
+                        gson = new GsonBuilder().create();
+                        testData = new TestData();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    while (isConnected) {
+                        try {
+                            msg = is.readUTF();
+                            testData = gson.fromJson(msg,new TypeToken<TestData>() {}.getType());
+                            datas.add(testData);
+                            String json = gson.toJson(datas, new TypeToken<List<TestData>>() {}.getType());
+                            SharedPreferences.Editor editor = sp.edit();
+                            editor.putString("Test",json);
+                            editor.commit();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+        }
+    }
 }
