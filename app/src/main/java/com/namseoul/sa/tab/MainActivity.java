@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -26,8 +27,13 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.reflect.Member;
 import java.net.HttpURLConnection;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.URL;
+import java.util.Enumeration;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -70,9 +76,12 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        if(PackageManager.PERMISSION_GRANTED != checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)){
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+        if(Build.VERSION.SDK_INT >= 23){
+            if(PackageManager.PERMISSION_GRANTED != checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)){
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+            }
         }
+
 
         login = findViewById(R.id.login_btn);
         membership = findViewById(R.id.membership_btn);
@@ -119,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
             sb.append("mode").append("=").append("login").append("&");
             sb.append("userID").append("=").append(id.getText().toString()).append("&");
             sb.append("userPassword").append("=").append(pw.getText().toString()).append("&");
+            sb.append("userIP").append("=").append(getLocalIpAddress());
 
             try{
                 URL url = new URL(urlbase + "login.php");
@@ -187,5 +197,21 @@ public class MainActivity extends AppCompatActivity {
             default:
                 Toast.makeText(MainActivity.this, s, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public static String getLocalIpAddress(){
+        try{
+            for(Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();){
+                NetworkInterface intf = en.nextElement();
+                for(Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();){
+                    InetAddress inetAddress = enumIpAddr.nextElement();
+                    if(!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address)
+                            return inetAddress.getHostAddress();
+                }
+            }
+        }catch(SocketException ex){
+            ex.printStackTrace();
+        }
+        return null;
     }
 }

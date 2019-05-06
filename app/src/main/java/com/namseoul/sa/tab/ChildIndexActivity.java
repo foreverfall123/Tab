@@ -17,12 +17,15 @@ public class ChildIndexActivity extends AppCompatActivity {
 
     final static String urlbase = "http://13.125.191.250/";
     HttpURLConnection urlConn = null;
-    String ip;
+    String ip,id;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.child_index);
+
+        Intent intent = getIntent();
+        id = intent.getStringExtra("idstr");
 
         getIP gp = new getIP();
         gp.execute();
@@ -39,7 +42,8 @@ public class ChildIndexActivity extends AppCompatActivity {
             try{
                 StringBuilder sb = new StringBuilder();
 
-                sb.append("mode").append("=").append("getpip");
+                sb.append("mode").append("=").append("getpip").append("&");
+                sb.append("id").append("=").append(id);
 
                 URL url = new URL(urlbase + "login.php");
                 urlConn = (HttpURLConnection) url.openConnection();

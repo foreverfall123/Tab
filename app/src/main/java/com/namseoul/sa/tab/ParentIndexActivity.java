@@ -35,11 +35,16 @@ public class ParentIndexActivity extends AppCompatActivity {
 
     final static String urlbase = "http://13.125.191.250/";
 
+    public String userID;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.parent_index);
+
+        Intent i = getIntent();
+        userID = i.getStringExtra("idstr");
 
         mode = "check";
         connect con = new connect();
@@ -107,7 +112,8 @@ public class ParentIndexActivity extends AppCompatActivity {
             switch(s[0]){
                 case "check":
                     sb.setLength(0);
-                    sb.append("mode").append("=").append("check");
+                    sb.append("mode").append("=").append("check").append("&");
+                    sb.append("userID").append("=").append(userID);
                     break;
             }
             try{
@@ -155,7 +161,7 @@ public class ParentIndexActivity extends AppCompatActivity {
             super.onPostExecute(s);
 
             if(mode.equals("check")&&s==null){
-                mode = "save";
+                mode = "add";
                 AlertDialog.Builder ad = new AlertDialog.Builder(ParentIndexActivity.this);
                 ad.setTitle("자녀 계정 입력")
                         .setMessage("자녀 계정의 ID를 입력해 주세요");
@@ -167,8 +173,9 @@ public class ParentIndexActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         sb.setLength(0);
-                        sb.append("mode").append("=").append("save").append("&");
-                        sb.append("id").append("=").append(et.getText().toString());
+                        sb.append("mode").append("=").append("add").append("&");
+                        sb.append("sid").append("=").append(et.getText().toString()).append("&");
+                        sb.append("mid").append("=").append(userID);
                     }
                 });
                 ad.setNegativeButton("취소", new DialogInterface.OnClickListener() {
@@ -194,8 +201,9 @@ public class ParentIndexActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 sb.setLength(0);
-                                sb.append("mode").append("=").append("save").append("&");
-                                sb.append("id").append("=").append(et.getText().toString());
+                                sb.append("mode").append("=").append("add").append("&");
+                                sb.append("sid").append("=").append(et.getText().toString()).append("&");
+                                sb.append("mid").append("=").append(userID);
                             }
                         });
                         ad.setNegativeButton("취소", new DialogInterface.OnClickListener() {
