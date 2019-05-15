@@ -28,7 +28,7 @@
         android:layout_marginBottom="189dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:text="링크복사"
+        android:text="아이 좌표 링크 복사"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

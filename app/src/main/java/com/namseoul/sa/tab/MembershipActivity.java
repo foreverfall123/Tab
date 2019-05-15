@@ -43,7 +43,7 @@ public class MembershipActivity extends AppCompatActivity {
     HttpURLConnection urlConn = null;
     StringBuilder sb = new StringBuilder();
 
-    final static String urlbase = "http://13.125.191.250/";
+    final static String urlbase = "http://13.125.227.209/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,7 +139,10 @@ public class MembershipActivity extends AppCompatActivity {
                 os.close();
 
                 if(urlConn.getResponseCode() != HttpURLConnection.HTTP_OK){
-                    return "네트워크 연결실패";
+
+                    Log.i("test",urlConn.getErrorStream().toString());
+
+                    return urlConn.getErrorStream().toString();
                 }
 
                 BufferedReader reader = new BufferedReader(new InputStreamReader(urlConn.getInputStream(),"UTF-8"));

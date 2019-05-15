@@ -15,7 +15,7 @@
         android:id="@+id/helpersetbtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="지도 기능 실행"/>
+        android:text="외부 도움 설정"/>
 
     <Button
         android:id="@+id/anothersetbtn"

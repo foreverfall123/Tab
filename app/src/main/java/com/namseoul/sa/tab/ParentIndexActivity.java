@@ -1,9 +1,13 @@
 package com.namseoul.sa.tab;
 
 import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.AsyncTask;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
@@ -12,6 +16,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.EditText;
 
 import java.io.BufferedReader;
@@ -33,9 +38,27 @@ public class ParentIndexActivity extends AppCompatActivity {
     public StringBuilder sb = new StringBuilder();
     public String mode;
 
-    final static String urlbase = "http://13.125.191.250/";
+    final static String urlbase = "http://13.125.227.209/";
 
     public String userID;
+
+    public String ip;
+
+    ParentService parentService;
+
+    ServiceConnection conn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            ParentService.MyBinder binder = (ParentService.MyBinder)service;
+            parentService = binder.getMyService();
+            parentService.setip(ip);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
 
 
     @Override
@@ -45,6 +68,10 @@ public class ParentIndexActivity extends AppCompatActivity {
 
         Intent i = getIntent();
         userID = i.getStringExtra("idstr");
+        Log.i("사용자 ID",userID);
+
+        Intent bindintent = new Intent(this,ParentService.class);
+        bindService(bindintent,conn, Context.BIND_AUTO_CREATE);
 
         mode = "check";
         connect con = new connect();
@@ -75,6 +102,7 @@ public class ParentIndexActivity extends AppCompatActivity {
 
         CustomFragmentPagerAdapter adapter = new CustomFragmentPagerAdapter(fm, fList);
         mViewPager.setAdapter(adapter);
+
     }
 
     ViewPager.SimpleOnPageChangeListener viewPagerListener = new ViewPager.SimpleOnPageChangeListener(){
@@ -186,9 +214,13 @@ public class ParentIndexActivity extends AppCompatActivity {
                     }
                 });
                 ad.show();
-                doInBackground(mode);
+                connect ct = new connect();
+                ct.execute(mode);
             }else if(mode.equals("check")&&!s.isEmpty()){
-                switch (s){
+                ip = s;
+
+            }else if(mode.equals("add")&&s!=null){
+                switch (s) {
                     case "":
                         AlertDialog.Builder ad = new AlertDialog.Builder(ParentIndexActivity.this);
                         ad.setTitle("없는 계정입니다.")
@@ -216,10 +248,17 @@ public class ParentIndexActivity extends AppCompatActivity {
                         ad.show();
                         break;
                     default:
+                        ip = s;
+                        break;
                 }
             }
+            if(s == null) {
+                Log.i("받아온값", "널");
+            }else{
+                Log.i("받아온 값",s);
+            }
+
+
         }
     }
-
-
 }

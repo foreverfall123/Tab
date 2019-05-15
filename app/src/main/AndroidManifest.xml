@@ -35,9 +35,12 @@
         <activity android:name=".MapActivity" />
         <activity android:name=".SafeZoneSetting"/>
         <activity android:name=".SafeZoneStart" />
+        <activity android:name=".MapServiceActivity"/>
 
 
         <service android:name=".LocationService" />
+        <service android:name=".ParentService"/>
+        <service android:name=".ChildService"/>
 
         <receiver
             android:name=".GeofenceBroadcastReceiver"

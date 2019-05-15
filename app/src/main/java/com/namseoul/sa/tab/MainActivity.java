@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
     static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1000;
 
-    final static String urlbase = "http://13.125.191.250/";
+    final static String urlbase = "http://13.125.227.209/";
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

@@ -19,10 +19,13 @@ package com.namseoul.sa.tab;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.IBinder;
 import android.support.v4.app.JobIntentService;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
@@ -51,6 +54,8 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
 
     private static final String CHANNEL_ID = "channel_01";
 
+    ChildService childService;
+
     /**
      * Convenience method for enqueuing work in to this service.
      */
@@ -65,6 +70,19 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
      */
     @Override
     protected void onHandleWork(Intent intent) {
+        ServiceConnection conn = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                ChildService.LocalBinder binder = (ChildService.LocalBinder)service;
+                childService = binder.getService();
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+
+            }
+        };
+
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
         if (geofencingEvent.hasError()) {
             String errorMessage = GeofenceErrorMessages.getErrorString(this,
@@ -88,6 +106,10 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
             // Get the transition details as a String.
             String geofenceTransitionDetails = getGeofenceTransitionDetails(geofenceTransition,
                     triggeringGeofences);
+
+            Intent i = new Intent(getApplicationContext(),ChildService.class);
+            bindService(i, conn, Context.BIND_AUTO_CREATE);
+            childService.sendwarning(geofenceTransitionDetails,geofenceTransition);
 
             // Send notification and log the transition details.
             sendNotification(geofenceTransitionDetails);
@@ -122,7 +144,7 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
         }
         String triggeringGeofencesIdsString = TextUtils.join(", ",  triggeringGeofencesIdsList);
 
-        return geofenceTransitionString + ": " + triggeringGeofencesIdsString;
+        return geofenceTransitionString + " " + triggeringGeofencesIdsString;
     }
 
     /**

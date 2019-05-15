@@ -2,11 +2,16 @@ package com.namseoul.sa.tab;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.SmsManager;
 import android.text.TextUtils;
@@ -14,6 +19,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -26,6 +32,23 @@ public class MainActivity2 extends AppCompatActivity {
     private SharedPreferences sp;
     private List<Contact> datas;
     private String strContact;
+
+    ParentService parentService;
+
+    Context mcontext;
+
+    ServiceConnection conn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            ParentService.MyBinder binder = (ParentService.MyBinder)service;
+            parentService = binder.getMyService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +99,15 @@ public class MainActivity2 extends AppCompatActivity {
         btn2.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                String imsi2 = "복사한 링크입니다";
+
+                Intent i = new Intent(mcontext,ParentService.class);
+                bindService(i,conn,Context.BIND_AUTO_CREATE);
+
+                parentService.sendrealtime();
+                LatLng ll = parentService.getchildgps();
+                parentService.sendstoptime();
+
+                String imsi2 = "http://maps.google.com/?q="+ll.latitude+","+ll.longitude;
                 ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
                 ClipData clip = ClipData.newPlainText("label",imsi2);

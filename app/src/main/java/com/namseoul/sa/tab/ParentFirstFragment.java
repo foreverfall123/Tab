@@ -50,6 +50,8 @@ public class ParentFirstFragment extends Fragment {
         mapstartbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent i = new Intent(view.getContext(),MapServiceActivity.class);
+                startActivity(i);
 
             }
         });
