@@ -17,7 +17,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.Gson;
@@ -94,8 +93,6 @@ public class MapServiceActivity extends AppCompatActivity implements OnMapReadyC
             googleMap.addPolyline(polylineOptions);
         }
 
-
-
         Intent i = new Intent(this,ParentService.class);
         bindService(i,conn, Context.BIND_AUTO_CREATE);
 
@@ -118,7 +115,7 @@ public class MapServiceActivity extends AppCompatActivity implements OnMapReadyC
             try{
                 Thread.sleep(1000);
             }catch(Exception e){
-
+                e.printStackTrace();
             }
         }
     }

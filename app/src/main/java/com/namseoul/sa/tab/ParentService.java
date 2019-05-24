@@ -44,7 +44,7 @@ public class ParentService extends Service {
     DataOutputStream os;
     String msg="";
     String strContact;
-    String ip;
+    String ip = null;
 
     private Gson gson;
     private SharedPreferences sp;
@@ -75,6 +75,14 @@ public class ParentService extends Service {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                if(ip == null){
+                    try{
+                        Thread.sleep(1000);
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
+                }
+
                 try{
                     socket = new Socket(InetAddress.getByName(ip),PORT);
                     is = new DataInputStream(socket.getInputStream());
@@ -117,6 +125,22 @@ public class ParentService extends Service {
         }).start();
 
         return mBinder;
+    }
+
+    public class isThread extends  Thread{
+
+        @Override
+        public void run() {
+            super.run();
+        }
+    }
+
+    public class osThread extends  Thread{
+
+        @Override
+        public void run() {
+            super.run();
+        }
     }
 
     public void setip(String ip){
@@ -186,22 +210,6 @@ public class ParentService extends Service {
 
         // Issue the notification
         mNotificationManager.notify(0, builder.build());
-    }
-
-    public void sendrealtime(){
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try{
-                    os.writeUTF("realtime");
-                    os.flush();
-                }catch(Exception e){
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-
     }
 
     public LatLng getchildgps(){

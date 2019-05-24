@@ -43,7 +43,7 @@
         <service android:name=".ChildService"/>
 
         <receiver
-            android:name=".GeofenceBroadcastReceiver"
+            android:name=".ChildService$GeofenceBroadcastReceiver"
             android:enabled="true"
             android:exported="true" />
 

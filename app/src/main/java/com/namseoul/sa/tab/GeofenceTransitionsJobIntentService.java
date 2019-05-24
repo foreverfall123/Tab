@@ -109,7 +109,6 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
 
             Intent i = new Intent(getApplicationContext(),ChildService.class);
             bindService(i, conn, Context.BIND_AUTO_CREATE);
-            childService.sendwarning(geofenceTransitionDetails,geofenceTransition);
 
             // Send notification and log the transition details.
             sendNotification(geofenceTransitionDetails);

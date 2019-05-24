@@ -3,6 +3,7 @@ package com.namseoul.sa.tab;
 import android.Manifest;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,10 +16,12 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
+import com.google.android.gms.location.GeofencingEvent;
 import com.google.android.gms.location.GeofencingRequest;
 
 import java.io.DataInputStream;
@@ -27,6 +30,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 public class ChildService extends Service{
 
@@ -40,6 +44,9 @@ public class ChildService extends Service{
 
     private static final int PORT = 10001;
     String ip;
+    StringBuilder sb;
+    String[] s;
+    String msg;
 
     Socket socket;
     ServerSocket serverSocket;
@@ -51,6 +58,8 @@ public class ChildService extends Service{
 
     double latitude, longitude;
 
+    int setTime = 0;
+
     private static final long MIN_DISTACE_UPDATES = 10;
     private static final long MIN_TIME_UPDATE = 1000*1*1;
 
@@ -58,6 +67,13 @@ public class ChildService extends Service{
     boolean isNetworkEnabled = false;
 
     protected LocationManager locationManager;
+
+    int geofenceTransition;
+    String triggeringGeofencesIdsString;
+
+    boolean realtimeswitch = false;
+    boolean geofenceEnter = false;
+    boolean geofenceExit = false;
 
     @Nullable
     @Override
@@ -94,62 +110,92 @@ public class ChildService extends Service{
                     is = new DataInputStream(socket.getInputStream());
                     os = new DataOutputStream(socket.getOutputStream());
 
-                    setTimegpg settime = new setTimegpg();
-                    settime.setDaemon(true);
-                    settime.run();
-
                 }catch(Exception e){
                     e.printStackTrace();
                 }
 
-                while(true){
-                    try{
-                        String[] s;
-                        String msg,name;
-                        double lan,lon;
-                        int range;
+                isThread ist = new isThread();
+                ist.run();
+                ist.isDaemon();
 
-                        msg = is.readUTF();
-
-                        s = msg.split(" ");
-
-                        realTimegps real = new realTimegps();
-
-                        switch (s[0]){
-                            case "realtime":
-                                real.run();
-                                break;
-                            case "realstop":
-                                real.threadStop(true);
-                                break;
-                            case "safezonestart":
-                                name = s[1];
-                                lan = Double.parseDouble(s[2]);
-                                lon = Double.parseDouble(s[3]);
-                                range = Integer.parseInt(s[4]);
-                                Geofence geofence = new Geofence.Builder()
-                                        .setRequestId(name)
-                                        .setCircularRegion(lan,lon,range)
-                                        .setExpirationDuration(Geofence.NEVER_EXPIRE)
-                                        .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER|Geofence.GEOFENCE_TRANSITION_EXIT)
-                                        .build();
-
-                                addGeofence(geofence);
-                                break;
-                            case "safeend":
-                                mGeofencingClient.removeGeofences(getGeofencePendingIntent());
-                                break;
-                        }
-
-                    }catch(Exception e){
-                        e.printStackTrace();
-                    }
-                }
-
+                osThread ost = new osThread();
+                ost.run();
+                ost.isDaemon();
             }
         }).start();
 
         return mBinder;
+    }
+
+    public class osThread extends Thread{
+        @Override
+        public void run() {
+            super.run();
+            while(true) {
+                try {
+                    if (realtimeswitch) {
+                        sb.setLength(0);
+                        sb.append("realtime").append(" ").append(latitude).append(" ").append(longitude);
+                        os.writeUTF(sb.toString());
+                    }
+                    if(setTime == 0){
+                        long now = System.currentTimeMillis();
+                        Date date = new Date(now);
+                        SimpleDateFormat sdf = new SimpleDateFormat("MM-dd hh:mm");
+                        String getTime = sdf.format(date);
+                        sb.setLength(0);
+                        sb.append("gettimegps").append(" ").append(latitude).append(" ").append(longitude).append(" ").append(getTime);
+                        os.writeUTF(sb.toString());
+                        setTime = 1000*60*30;
+                    }
+                    if(geofenceEnter){
+                        sb.setLength(0);
+                        sb.append("geofenceenter").append(" ").append(geofenceTransition).append(" ").append(triggeringGeofencesIdsString);
+                        os.writeUTF(sb.toString());
+                    }
+                    if(geofenceExit){
+                        sb.setLength(0);
+                        sb.append("geofenceexit").append(" ").append(geofenceTransition).append(" ").append(triggeringGeofencesIdsString);
+                        os.writeUTF(sb.toString());
+                    }
+                    setTime--;
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public class isThread extends Thread{
+        @Override
+        public void run() {
+            super.run();
+            while(true){
+                try{
+                    msg = is.readUTF();
+                    s = msg.split(" ");
+
+                    switch(s[0]){
+                        case "realstart":
+                            realtimeswitch = true;
+                            break;
+                        case "realstop":
+                            realtimeswitch = false;
+                            break;
+                        case "geostart":
+                            setGeofence(s[1],Double.parseDouble(s[2]),Double.parseDouble(s[3]),Integer.parseInt(s[4]));
+                            break;
+                        case "geostop":
+                            mGeofencingClient.removeGeofences(getGeofencePendingIntent());
+                            break;
+                    }
+
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     @Override
@@ -186,70 +232,6 @@ public class ChildService extends Service{
         }
     };
 
-    public class realTimegps extends Thread {
-        private boolean stop;
-
-        realTimegps(){
-            this.stop = false;
-        }
-
-        @Override
-        public void run() {
-            while(!stop){
-                StringBuilder sb = new StringBuilder();
-                sb.append("getrealgps").append(latitude).append(" ").append(longitude);
-                String data = sb.toString();
-
-                try{
-                    os.writeUTF(data);
-                    os.flush();
-                }catch(Exception e){
-                    e.printStackTrace();
-                }
-
-                try{
-                    Thread.sleep(1000);
-                }catch(Exception e){
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        public void threadStop(boolean stop){
-            this.stop = stop;
-        }
-    }
-
-    public class setTimegpg extends Thread{
-        @Override
-        public void run() {
-            while(true) {
-                long now = System.currentTimeMillis();
-                Date date = new Date(now);
-                SimpleDateFormat sdf = new SimpleDateFormat("MM-dd hh:mm");
-                String getTime = sdf.format(date);
-                StringBuilder sb = new StringBuilder();
-                sb.append("gettimegps").append(" ").append(latitude).append(" ").append(longitude).append(" ").append(getTime);
-                String data = sb.toString();
-
-                try {
-                    os.writeUTF(data);
-                    os.flush();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                try {
-                    Thread.sleep(1000 * 60 * 60);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-
-
     private GeofencingRequest getGeofencingRequest(Geofence g){
         GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
 
@@ -265,7 +247,7 @@ public class ChildService extends Service{
         if (mGeofencePendingIntent != null) {
             return mGeofencePendingIntent;
         }
-        Intent intent = new Intent(this, GeofenceBroadcastReceiver.class);
+        Intent intent = new Intent(this, ChildService.GeofenceBroadcastReceiver.class);
 
         mGeofencePendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         return mGeofencePendingIntent;
@@ -278,6 +260,16 @@ public class ChildService extends Service{
         }
 
         mGeofencingClient.addGeofences(getGeofencingRequest(g),getGeofencePendingIntent());
+    }
+    private void setGeofence(String name, double lan, double lon, int range){
+        Geofence geofence = new Geofence.Builder()
+                .setRequestId(name)
+                .setCircularRegion(lan,lon,range)
+                .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER|Geofence.GEOFENCE_TRANSITION_EXIT)
+                .build();
+
+        addGeofence(geofence);
     }
 
 
@@ -292,21 +284,27 @@ public class ChildService extends Service{
         Log.i("받은 IP 값",this.ip);
     }
 
-    public void sendwarning(String geofenceinfo, int geofence){
-        StringBuilder sb = new StringBuilder();
-        sb.append("geofencewarring").append(" ").append(geofenceinfo).append(" ").append(geofence);
-        final String data = sb.toString();
+    public class GeofenceBroadcastReceiver extends BroadcastReceiver{
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    os.writeUTF(data);
-                    os.flush();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
+            if(geofencingEvent.hasError()){
+                String errorMaggase = GeofenceErrorMessages.getErrorString(ChildService.this,geofencingEvent.getErrorCode());
+                Log.e("error",errorMaggase);
+                return;
             }
-        }).start();
+
+            geofenceTransition = geofencingEvent.getGeofenceTransition();
+            if(geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER){
+                List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
+                triggeringGeofencesIdsString = TextUtils.join(", ", triggeringGeofences);
+                geofenceEnter = true;
+            }else if(geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT){
+                List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
+                triggeringGeofencesIdsString = TextUtils.join(", ", triggeringGeofences);
+                geofenceExit = true;
+            }
+        }
     }
 }

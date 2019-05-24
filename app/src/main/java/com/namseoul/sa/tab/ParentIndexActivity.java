@@ -70,9 +70,6 @@ public class ParentIndexActivity extends AppCompatActivity {
         userID = i.getStringExtra("idstr");
         Log.i("사용자 ID",userID);
 
-        Intent bindintent = new Intent(this,ParentService.class);
-        bindService(bindintent,conn, Context.BIND_AUTO_CREATE);
-
         mode = "check";
         connect con = new connect();
         con.execute(mode);
@@ -236,6 +233,8 @@ public class ParentIndexActivity extends AppCompatActivity {
                                 sb.append("mode").append("=").append("add").append("&");
                                 sb.append("sid").append("=").append(et.getText().toString()).append("&");
                                 sb.append("mid").append("=").append(userID);
+                                connect ct = new connect();
+                                ct.execute(mode);
                             }
                         });
                         ad.setNegativeButton("취소", new DialogInterface.OnClickListener() {
@@ -258,7 +257,10 @@ public class ParentIndexActivity extends AppCompatActivity {
                 Log.i("받아온 값",s);
             }
 
-
+            if(!(conn == null)){
+                Intent bindintent = new Intent(ParentIndexActivity.this,ParentService.class);
+                bindService(bindintent,conn, Context.BIND_AUTO_CREATE);
+            }
         }
     }
 }

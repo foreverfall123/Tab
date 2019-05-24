@@ -52,7 +52,6 @@ public class ParentFirstFragment extends Fragment {
             public void onClick(View v) {
                 Intent i = new Intent(view.getContext(),MapServiceActivity.class);
                 startActivity(i);
-
             }
         });
 
