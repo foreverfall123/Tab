@@ -23,7 +23,6 @@ import com.google.gson.reflect.TypeToken;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -38,12 +37,10 @@ public class ParentService extends Service {
     static final int PORT = 10001;
     IBinder mBinder = new MyBinder();
 
-    ServerSocket serversocket;
     Socket socket;
     DataInputStream is;
     DataOutputStream os;
     String msg="";
-    String strContact;
     String ip = null;
 
     private Gson gson;
@@ -53,7 +50,13 @@ public class ParentService extends Service {
 
     double lat,lon;
 
-    boolean isConnected = true;
+    String[] s;
+
+    boolean startrealgps = false;
+    boolean stoprealgps = false;
+
+    String check;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -75,7 +78,8 @@ public class ParentService extends Service {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if(ip == null){
+
+                while(ip == null){
                     try{
                         Thread.sleep(1000);
                     }catch(Exception e){
@@ -87,60 +91,88 @@ public class ParentService extends Service {
                     socket = new Socket(InetAddress.getByName(ip),PORT);
                     is = new DataInputStream(socket.getInputStream());
                     os = new DataOutputStream(socket.getOutputStream());
+                    Log.i("네트워크설정","연결완료");
                 }catch(Exception e){
                     e.printStackTrace();
                     Log.i("설정 오류","소켓 및 스트림 설정 오류 발생");
                 }
-                while (true){
-                    try{
-                        msg = is.readUTF();
-                        String[] smsg = msg.split(" ");
-                        if(smsg[0].equals("geofencewarring")){
-                            sendNotification(smsg[1],smsg[2],Integer.parseInt(smsg[3]));
-                        }else if(smsg[0].equals("gettimegps")){
-                            GPSData.setla(Double.parseDouble(smsg[1]));
-                            GPSData.setlo(Double.parseDouble(smsg[2]));
-                            GPSData.setna(smsg[3]);
 
-                            datas.add(GPSData);
-
-                            gson = new GsonBuilder().create();
-                            Type listType = new TypeToken<ArrayList<GPSData>>(){}.getType();
-                            String json = gson.toJson(datas,listType);
-
-                            sp = getSharedPreferences("shared",MODE_PRIVATE);
-                            SharedPreferences.Editor editor = sp.edit();
-                            editor.putString("gps",json);
-                            editor.commit();
-                        }else if(smsg[0].equals("getrealps")){
-                            lat = Double.parseDouble(smsg[1]);
-                            lon = Double.parseDouble(smsg[2]);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        while(true){
+                            try{
+                                if(startrealgps){
+                                    os.flush();
+                                    os.writeUTF("realstart");
+                                    Log.i("서비스","전송완료");
+                                    startrealgps = false;
+                                }
+                                if(stoprealgps){
+                                    os.flush();
+                                    os.writeUTF("realstop");
+                                    stoprealgps = false;
+                                }
+                                Thread.sleep(1000);
+                            }catch(Exception e){
+                                e.printStackTrace();
+                            }
                         }
-                        Thread.sleep(1000);
-                    }catch(Exception e){
-                        //e.printStackTrace();
                     }
-                }
+                }).start();
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        while(true){
+                            try{
+                                Log.i("서비스","받기");
+                                msg = is.readUTF();
+                                s = msg.split(" ");
+
+                                switch(s[0]){
+                                    case "realtime":
+                                        lat = Double.parseDouble(s[1]);
+                                        lon = Double.parseDouble(s[2]);
+
+                                        Log.i("서비스받는부분",Double.toString(lat));
+                                        Log.i("서비스받는부분",Double.toString(lon));
+
+                                        check = msg;
+                                        break;
+                                    case "gettimegps":
+                                        GPSData.setla(Double.parseDouble(s[1]));
+                                        GPSData.setlo(Double.parseDouble(s[2]));
+                                        GPSData.setna(s[3]);
+
+                                        datas.add(GPSData);
+
+                                        gson = new GsonBuilder().create();
+                                        Type listType = new TypeToken<ArrayList<GPSData>>(){}.getType();
+                                        String json = gson.toJson(datas,listType);
+
+                                        sp = getSharedPreferences("shared",MODE_PRIVATE);
+                                        SharedPreferences.Editor editor = sp.edit();
+                                        editor.putString("gps",json);
+                                        editor.commit();
+                                        break;
+                                    case "geofenceenter":
+                                        sendNotification(s[2],Integer.parseInt(s[1]));
+                                        break;
+                                    case "geofenceexit":
+                                        sendNotification(s[2],Integer.parseInt(s[1]));
+                                        break;
+                                }
+                            }catch(Exception e){
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }).start();
             }
         }).start();
 
         return mBinder;
-    }
-
-    public class isThread extends  Thread{
-
-        @Override
-        public void run() {
-            super.run();
-        }
-    }
-
-    public class osThread extends  Thread{
-
-        @Override
-        public void run() {
-            super.run();
-        }
     }
 
     public void setip(String ip){
@@ -148,7 +180,7 @@ public class ParentService extends Service {
         Log.i("IP 받은 값",ip);
     }
 
-    private void sendNotification(String geofenceindex, String notificationDetails, int geofencet) {
+    private void sendNotification(String geofenceindex, int geofencet) {
         // Get an instance of the Notification manager
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -165,13 +197,13 @@ public class ParentService extends Service {
         }
 
         // Create an explicit content Intent that starts the main Activity.
-        Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
+        Intent notificationIntent = new Intent(getApplicationContext(), ParentIndexActivity.class);
 
         // Construct a task stack.
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
 
         // Add the main Activity to the task stack as the parent.
-        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addParentStack(ParentIndexActivity.class);
 
         // Push the content Intent onto the stack.
         stackBuilder.addNextIntent(notificationIntent);
@@ -187,13 +219,13 @@ public class ParentService extends Service {
             builder.setColor(Color.BLUE)
                     .setSmallIcon(R.drawable.common_google_signin_btn_icon_light)
                     .setContentTitle(geofenceindex)
-                    .setContentText(notificationDetails)
+                    .setContentText("안전지대 내부에 진입했습니다.")
                     .setContentIntent(notificationPendingIntent);
         }else if(geofencet== Geofence.GEOFENCE_TRANSITION_EXIT){
             builder.setColor(Color.RED)
                     .setSmallIcon(R.drawable.common_google_signin_btn_icon_light)
                     .setContentTitle(geofenceindex)
-                    .setContentText(notificationDetails)
+                    .setContentText("안전지대를 이탈했습니다")
                     .setContentIntent(notificationPendingIntent);
         }
 
@@ -213,21 +245,23 @@ public class ParentService extends Service {
     }
 
     public LatLng getchildgps(){
+        Log.i("서비스함수부분",Double.toString(lat));
+        Log.i("서비스함수부분",Double.toString(lon));
         return new LatLng(lat,lon);
+
     }
 
-    public void sendstoptime(){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try{
-                    os.writeUTF("realstop");
-                    os.flush();
-                }catch(Exception e){
-                    e.printStackTrace();
-                }
-            }
-        }).start();
+    public void startgpsset(){
+        startrealgps = true;
+        Log.i("서비스","실제 스타트");
+    }
+
+    public void stopgpsset(){
+        stoprealgps = true;
+    }
+
+    public String getmsg(){
+        return check;
     }
 
 }

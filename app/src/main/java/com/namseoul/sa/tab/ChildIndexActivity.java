@@ -30,6 +30,8 @@ public class ChildIndexActivity extends AppCompatActivity {
 
     Button start,stop;
 
+    ServiceConnection conn;
+
    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,10 +40,18 @@ public class ChildIndexActivity extends AppCompatActivity {
         start = findViewById(R.id.start);
         stop = findViewById(R.id.stop);
 
+        stop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         Intent i = getIntent();
         id = i.getStringExtra("idstr");
 
-       final ServiceConnection conn = new ServiceConnection() {
+       conn = new ServiceConnection() {
+
            @Override
            public void onServiceConnected(ComponentName name, IBinder service) {
                ChildService.LocalBinder binder = (ChildService.LocalBinder)service;
@@ -58,29 +68,13 @@ public class ChildIndexActivity extends AppCompatActivity {
         getIP gp = new getIP();
         gp.execute();
 
-        start.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(ChildIndexActivity.this,ChildService.class);
-                bindService(i,conn, Context.BIND_AUTO_CREATE);
-
-            }
-        });
-
-        stop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(conn != null){
-                    unbindService(conn);
-                }
-            }
-        });
-
-
-
     }
 
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(conn);
+    }
 
     public class getIP extends AsyncTask<Void, Void, String>{
 
@@ -137,6 +131,8 @@ public class ChildIndexActivity extends AppCompatActivity {
             ip = s;
             Log.i("받은 값",s);
 
+            Intent i = new Intent(ChildIndexActivity.this,ChildService.class);
+            bindService(i,conn, Context.BIND_AUTO_CREATE);
         }
     }
 }

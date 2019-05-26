@@ -185,7 +185,7 @@ public class SafeZoneSetting extends AppCompatActivity implements CompoundButton
         if (mGeofencePendingIntent != null) {
             return mGeofencePendingIntent;
         }
-        Intent intent = new Intent(this, GeofenceBroadcastReceiver.class);
+        Intent intent = new Intent(this, ChildService.GeofenceBroadcastReceiver.class);
 
         mGeofencePendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         return mGeofencePendingIntent;

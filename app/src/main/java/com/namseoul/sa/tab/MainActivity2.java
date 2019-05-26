@@ -103,9 +103,8 @@ public class MainActivity2 extends AppCompatActivity {
                 Intent i = new Intent(mcontext,ParentService.class);
                 bindService(i,conn,Context.BIND_AUTO_CREATE);
 
-                parentService.sendrealtime();
                 LatLng ll = parentService.getchildgps();
-                parentService.sendstoptime();
+                unbindService(conn);
 
                 String imsi2 = "http://maps.google.com/?q="+ll.latitude+","+ll.longitude;
                 ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);

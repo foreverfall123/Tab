@@ -111,8 +111,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Intent i = new Intent(MainActivity.this,LocationService.class);
-                startService(i);
             }
         });
     }
@@ -189,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
                 finish();
                 break;
             case "C":
-                i = new Intent(MainActivity.this,ChildIndexActivity.class);
+                i = new Intent(MainActivity.this, ChildIndexActivity.class);
                 i.putExtra("idstr",idstr);
                 startActivity(i);
                 finish();

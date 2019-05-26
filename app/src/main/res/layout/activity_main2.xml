@@ -19,7 +19,10 @@
         app:layout_constraintBottom_toTopOf="@+id/LinkCopy"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/round"
+        android:backgroundTint="#000000"
+        android:textColor="#FFFFFF"/>
 
     <Button
         android:id="@+id/LinkCopy"

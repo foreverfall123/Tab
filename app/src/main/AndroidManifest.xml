@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.SEND_SMS"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 
@@ -18,6 +19,7 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyD__F8RBiuP_5IrzmeGBqbubymiNla1ias"/>
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,16 +31,15 @@
         <activity android:name=".ParentIndexActivity"/>
         <activity android:name=".ChildIndexActivity"/>
         <activity android:name=".GeofancingActivity"/>
-        <activity android:name=".GoogleMapActivity"/>
         <activity android:name=".MainActivity2" />
         <activity android:name=".MainActivity3" />
         <activity android:name=".MapActivity" />
         <activity android:name=".SafeZoneSetting"/>
         <activity android:name=".SafeZoneStart" />
         <activity android:name=".MapServiceActivity"/>
+        <activity android:name=".zTestChild"/>
+        <activity android:name=".zTestParent"/>
 
-
-        <service android:name=".LocationService" />
         <service android:name=".ParentService"/>
         <service android:name=".ChildService"/>
 
