@@ -41,17 +41,22 @@ public class ParentIndexActivity extends AppCompatActivity {
     final static String urlbase = "http://13.125.227.209/";
 
     public String userID;
+    public String cID;
 
     public String ip;
 
     ParentService parentService;
+
+    connect con;
 
     ServiceConnection conn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             ParentService.MyBinder binder = (ParentService.MyBinder)service;
             parentService = binder.getMyService();
-            parentService.setip(ip);
+            if(ip != null) {
+                parentService.setip(ip);
+            }
         }
 
         @Override
@@ -71,7 +76,7 @@ public class ParentIndexActivity extends AppCompatActivity {
         Log.i("사용자 ID",userID);
 
         mode = "check";
-        connect con = new connect();
+        con = new connect();
         con.execute(mode);
 
         mViewPager = (ViewPager)findViewById(R.id.pager);
@@ -146,6 +151,7 @@ public class ParentIndexActivity extends AppCompatActivity {
                 urlConn = (HttpURLConnection) url.openConnection();
 
                 String strParam = sb.toString();
+                Log.i("전송내용",strParam);
 
                 urlConn.setRequestMethod("POST");
                 urlConn.setRequestProperty("Accep","application/json");
@@ -197,10 +203,15 @@ public class ParentIndexActivity extends AppCompatActivity {
                 ad.setPositiveButton("확인", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        cID = et.getText().toString();
                         sb.setLength(0);
                         sb.append("mode").append("=").append("add").append("&");
-                        sb.append("sid").append("=").append(et.getText().toString()).append("&");
+                        sb.append("sid").append("=").append(cID).append("&");
                         sb.append("mid").append("=").append(userID);
+                        Log.i("자신의 아이디",userID);
+                        Log.i("상대 아이디", cID);
+                        connect ct = new connect();
+                        ct.execute(mode);
                     }
                 });
                 ad.setNegativeButton("취소", new DialogInterface.OnClickListener() {
@@ -211,8 +222,7 @@ public class ParentIndexActivity extends AppCompatActivity {
                     }
                 });
                 ad.show();
-                connect ct = new connect();
-                ct.execute(mode);
+
             }else if(mode.equals("check")&&!s.isEmpty()){
                 ip = s;
 
@@ -261,6 +271,14 @@ public class ParentIndexActivity extends AppCompatActivity {
                 Intent bindintent = new Intent(ParentIndexActivity.this,ParentService.class);
                 bindService(bindintent,conn, Context.BIND_AUTO_CREATE);
             }
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(conn != null){
+            unbindService(conn);
         }
     }
 }

@@ -54,8 +54,16 @@ public class ParentService extends Service {
 
     boolean startrealgps = false;
     boolean stoprealgps = false;
+    boolean startgeofence = false;
+    boolean stopgeofence = false;
+
+    String geoname;
+    double geolat;
+    double geolon;
+    int georange;
 
     String check;
+    StringBuilder sb;
 
     @Override
     public void onCreate() {
@@ -74,6 +82,8 @@ public class ParentService extends Service {
 
     @Override
     public IBinder onBind(Intent intent){
+
+        sb = new StringBuilder();
 
         new Thread(new Runnable() {
             @Override
@@ -112,6 +122,20 @@ public class ParentService extends Service {
                                     os.flush();
                                     os.writeUTF("realstop");
                                     stoprealgps = false;
+                                }
+                                if(startgeofence){
+                                    sb.setLength(0);
+                                    sb.append("geostart").append(" ").append(geoname).append(" ")
+                                            .append(geolat).append(" ").append(geolon).append(" ")
+                                            .append(georange);
+                                    os.flush();
+                                    os.writeUTF(sb.toString());
+                                    startgeofence = false;
+                                }
+                                if (stopgeofence) {
+                                    os.flush();
+                                    os.writeUTF("geostop");
+                                    stopgeofence = false;
                                 }
                                 Thread.sleep(1000);
                             }catch(Exception e){
@@ -264,4 +288,26 @@ public class ParentService extends Service {
         return check;
     }
 
+    public void startgeoset(String name, double lat, double lon, int ran){
+        this.geoname = name;
+        this.geolat = lat;
+        this.geolon = lon;
+        this.georange = ran;
+        startgeofence = true;
+    }
+
+    public void stopgeoset(){
+        stopgeofence = true;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        try{
+            os.close();
+            is.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 }

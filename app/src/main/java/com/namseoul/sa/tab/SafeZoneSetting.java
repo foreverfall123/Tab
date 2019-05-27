@@ -3,11 +3,15 @@ package com.namseoul.sa.tab;
 import android.Manifest;
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -42,7 +46,8 @@ public class SafeZoneSetting extends AppCompatActivity implements CompoundButton
 
     private List<String> list = new ArrayList();
 
-    private BackPressCloseHanlder backPressCloseHanlder;
+    ServiceConnection conn;
+    ParentService parentService;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,14 +76,26 @@ public class SafeZoneSetting extends AppCompatActivity implements CompoundButton
         tvarray[8] = findViewById(R.id.tvarray9);
         tvarray[9] = findViewById(R.id.tvarray10);
 
+        conn = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                ParentService.MyBinder mbinder = (ParentService.MyBinder)service;
+                parentService = mbinder.getMyService();
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+
+            }
+        };
+
+        Intent intent = new Intent(SafeZoneSetting.this,ParentService.class);
+        bindService(intent, conn, Context.BIND_AUTO_CREATE);
+
         for(int i = 0; i < 10; i++){
             toarray[i].setVisibility(View.INVISIBLE);
             tvarray[i].setVisibility(View.INVISIBLE);
         }
-
-        mGeofencingClient = LocationServices.getGeofencingClient(this);
-
-        backPressCloseHanlder = new BackPressCloseHanlder(this);
 
         mDbOpenHelper = new DbOpenHelper(this);
         try{
@@ -134,7 +151,7 @@ public class SafeZoneSetting extends AppCompatActivity implements CompoundButton
 
             list.add(Integer.toString(index));
 
-            setGeofence();
+            parentService.startgeoset(mInfoArr.get(index).getName(),mInfoArr.get(index).getLatitude(),mInfoArr.get(index).getLongitude(),mInfoArr.get(index).getRange());
 
             tvarray[index].setText(mInfoArr.get(index).getName() + "\n실행중");
 
@@ -142,89 +159,9 @@ public class SafeZoneSetting extends AppCompatActivity implements CompoundButton
 
             list.remove(Integer.toString(index));
 
-            mGeofencingClient.removeGeofences(getGeofencePendingIntent());
-
-            setGeofence();
+            parentService.stopgeoset();
 
             tvarray[index].setText(mInfoArr.get(index).getName());
-        }
-    }
-
-    private GeofencingRequest getGeofencingRequest(){
-        GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
-
-        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER|GeofencingRequest.INITIAL_TRIGGER_EXIT);
-
-        builder.addGeofences(geolist);
-
-        return builder.build();
-    }
-
-    private void setGeofence(){
-        if(list.size() == 0){
-            return;
-        }
-
-        geolist = new ArrayList<>();
-
-        for(String s : list){
-            int i = Integer.parseInt(s);
-            geolist.add(new Geofence.Builder()
-            .setRequestId(mInfoArr.get(i).getName())
-            .setCircularRegion(mInfoArr.get(i).getLatitude(),mInfoArr.get(i).getLongitude(),mInfoArr.get(i).getRange())
-            .setExpirationDuration(Geofence.NEVER_EXPIRE)
-            .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER|Geofence.GEOFENCE_TRANSITION_EXIT)
-            .build());
-        }
-
-        addGeofence();
-    }
-
-    private PendingIntent getGeofencePendingIntent() {
-
-        if (mGeofencePendingIntent != null) {
-            return mGeofencePendingIntent;
-        }
-        Intent intent = new Intent(this, ChildService.GeofenceBroadcastReceiver.class);
-
-        mGeofencePendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        return mGeofencePendingIntent;
-    }
-
-    private void addGeofence(){
-        int permissionState = ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION);
-        if(permissionState==PackageManager.PERMISSION_GRANTED){
-
-        }
-
-        mGeofencingClient.addGeofences(getGeofencingRequest(),getGeofencePendingIntent());
-        Log.i("지오팬스 실행 완료","컴플리트");
-    }
-
-    public void onBackPressed(){
-        backPressCloseHanlder.onBackPressed();
-    }
-
-    public class BackPressCloseHanlder{
-        private long backKeyClickTime = 0;
-        private Activity activity;
-
-        public BackPressCloseHanlder(Activity activity){
-            this.activity = activity;
-        }
-
-        public void onBackPressed(){
-            if(System.currentTimeMillis() > backKeyClickTime + 2000){
-                backKeyClickTime = System.currentTimeMillis();
-                showToast();
-            }
-            if(System.currentTimeMillis() <= backKeyClickTime + 2000){
-                mGeofencingClient.removeGeofences(getGeofencePendingIntent());
-                activity.finish();
-            }
-        }
-        public void showToast(){
-            Toast.makeText(activity, "뒤로 가기 버튼을 한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show();
         }
     }
 }

@@ -23,6 +23,7 @@ import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingEvent;
 import com.google.android.gms.location.GeofencingRequest;
+import com.google.android.gms.location.LocationServices;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -31,6 +32,8 @@ import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ChildService extends Service{
 
@@ -68,17 +71,19 @@ public class ChildService extends Service{
 
     protected LocationManager locationManager;
 
-    int geofenceTransition;
-    String triggeringGeofencesIdsString;
+    static int geofenceTransition;
+    static String triggeringGeofencesIdsString;
 
     boolean realtimeswitch = false;
-    boolean geofenceEnter = false;
-    boolean geofenceExit = false;
+    static boolean geofenceEnter = false;
+    static boolean geofenceExit = false;
 
     String check;
 
     boolean isStream;
     boolean osStream;
+
+    TimerTask addTask;
 
     @Nullable
     @Override
@@ -87,6 +92,7 @@ public class ChildService extends Service{
         final Context mContext;
         mContext = this;
 
+        mGeofencingClient = LocationServices.getGeofencingClient(mContext);
         sb = new StringBuilder();
         isStream = true;
         osStream = true;
@@ -111,22 +117,17 @@ public class ChildService extends Service{
         latitude = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER).getLatitude();
         longitude = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER).getLongitude();
 
-        Log.i("중간",Double.toString(latitude));
-        Log.i("중간",Double.toString(longitude));
-
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try{
                     serverSocket = new ServerSocket(PORT);
-                    Log.i("중간","성공");
                 }catch (Exception e){
                     e.printStackTrace();
                 }
 
                 try{
                     socket = serverSocket.accept();
-                    Log.i("중간","성공");
 
                     is = new DataInputStream(socket.getInputStream());
                     os = new DataOutputStream(socket.getOutputStream());
@@ -135,6 +136,27 @@ public class ChildService extends Service{
                     e.printStackTrace();
                 }
 
+                addTask = new TimerTask() {
+                    @Override
+                    public void run() {
+                        try {
+                            os.flush();
+                            long now = System.currentTimeMillis();
+                            Date date = new Date(now);
+                            SimpleDateFormat sdf = new SimpleDateFormat("MM-dd hh:mm");
+                            String getTime = sdf.format(date);
+                            sb.setLength(0);
+                            sb.append("gettimegps").append(" ").append(latitude).append(" ").append(longitude).append(" ").append(getTime);
+                            os.writeUTF(sb.toString());
+                        }catch(Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                };
+
+                Timer timer = new Timer();
+                timer.schedule(addTask,0,1000*60*30);
+
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -142,38 +164,25 @@ public class ChildService extends Service{
                             try {
                                 if (realtimeswitch) {
                                     os.flush();
-                                    Log.i("서비스","조건문 통과");
-                                    Log.i("서비스",Double.toString(latitude));
-                                    Log.i("서비스",Double.toString(longitude));
                                     sb.setLength(0);
                                     sb.append("realtime").append(" ").append(latitude).append(" ").append(longitude);
                                     check = sb.toString();
-                                    Log.i("서비스","값 체크");
-                                    Log.i("서비스",check);
                                     os.writeUTF(check);
                                 }
-                                if(setTime == 0){
-                                    long now  = System.currentTimeMillis();
-                                    Date date = new Date(now);
-                                    SimpleDateFormat sdf = new SimpleDateFormat("MM-dd hh:mm");
-                                    String getTime = sdf.format(date);
-                                    sb.setLength(0);
-                                    sb.append("gettimegps").append(" ").append(latitude).append(" ").append(longitude).append(" ").append(getTime);
-                                    os.writeUTF(sb.toString());
-                                    os.flush();
-                                    setTime = 1000*60*30;
-                                }
                                 if(geofenceEnter){
+                                    Log.i("서비스","지오팬스진입");
                                     sb.setLength(0);
                                     sb.append("geofenceenter").append(" ").append(geofenceTransition).append(" ").append(triggeringGeofencesIdsString);
                                     os.writeUTF(sb.toString());
                                     os.flush();
+                                    geofenceEnter = false;
                                 }
                                 if(geofenceExit){
                                     sb.setLength(0);
                                     sb.append("geofenceexit").append(" ").append(geofenceTransition).append(" ").append(triggeringGeofencesIdsString);
                                     os.writeUTF(sb.toString());
                                     os.flush();
+                                    geofenceExit = false;
                                 }
                                 Thread.sleep(1000);
                             } catch (Exception e) {
@@ -193,14 +202,14 @@ public class ChildService extends Service{
 
                                 switch(s[0]){
                                     case "realstart":
-                                        Log.i("서비스","시작신호받음");
                                         realtimeswitch = true;
-                                        Log.i("서비스",Boolean.toString(realtimeswitch));
                                         break;
                                     case "realstop":
                                         realtimeswitch = false;
                                         break;
                                     case "geostart":
+                                        Log.i("서비스","지오팬스 시작");
+                                        Log.i("서비스",msg);
                                         setGeofence(s[1],Double.parseDouble(s[2]),Double.parseDouble(s[3]),Integer.parseInt(s[4]));
                                         break;
                                     case "geostop":
@@ -318,16 +327,18 @@ public class ChildService extends Service{
         Log.i("받은 IP 값",this.ip);
     }
 
-    public class GeofenceBroadcastReceiver extends BroadcastReceiver{
+    public static class GeofenceBroadcastReceiver extends BroadcastReceiver{
 
         @Override
         public void onReceive(Context context, Intent intent) {
             GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
             if(geofencingEvent.hasError()){
-                String errorMaggase = GeofenceErrorMessages.getErrorString(ChildService.this,geofencingEvent.getErrorCode());
+                String errorMaggase = GeofenceErrorMessages.getErrorString(context,geofencingEvent.getErrorCode());
                 Log.e("error",errorMaggase);
                 return;
             }
+
+            Log.i("방송","방송받음");
 
             geofenceTransition = geofencingEvent.getGeofenceTransition();
             if(geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER){
